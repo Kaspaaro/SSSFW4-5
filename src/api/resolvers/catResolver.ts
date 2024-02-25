@@ -1,20 +1,20 @@
-import catModel from '../models/catModel';
+import CatModel from '../models/catModel';
 import {Cat, LocationInput} from '../../types/DBTypes';
 import {MyContext} from '../../types/MyContext';
 import {isLoggedIn} from '../../functions/authorize';
 export default {
     Query: {
         cats: async () => {
-            return await catModel.find();
+            return CatModel.find();
         },
         catById: async (_parent: undefined, args: {id: string}) => {
-            return await catModel.findById(args.id);
+            return CatModel.findById(args.id);
         },
         catsByArea: async (_parent: undefined, args: LocationInput) => {
             const rightCorner = [args.topRight.lng, args.topRight.lat];
             const leftCorner = [args.bottomLeft.lng, args.bottomLeft.lat];
 
-            return await catModel.find({
+            return CatModel.find({
                 location: {
                     $geoWithin: {
                         $box: [leftCorner, rightCorner],
@@ -23,7 +23,7 @@ export default {
             });
         },
         catsByOwner: async (_parent: undefined, args: {ownerId: string}) => {
-            return await catModel.find({owner: args.ownerId});
+            return CatModel.find({owner: args.ownerId});
         },
     },
 
@@ -35,7 +35,7 @@ export default {
         ) => {
             isLoggedIn(context);
             args.input.owner = context.userdata?.user.id;
-            return await catModel.create(args.input);
+            return await CatModel.create(args.input);
         },
         updateCat: async (
             _parent: undefined,
@@ -45,9 +45,9 @@ export default {
             isLoggedIn(context);
             if (context.userdata?.user.role !== 'admin') {
                 const filter = {_id: args.id, owner: context.userdata?.user.id};
-                return await catModel.findOneAndUpdate(filter, args.input, {new: true});
+                return CatModel.findOneAndUpdate(filter, args.input, {new: true});
             } else {
-                return await catModel.findByIdAndUpdate(args.id, args.input, {
+                return CatModel.findByIdAndUpdate(args.id, args.input, {
                     new: true,
                 });
             }
@@ -60,9 +60,9 @@ export default {
             isLoggedIn(context);
             if (context.userdata?.user.role !== 'admin') {
                 const filter = {_id: args.id, owner: context.userdata?.user.id};
-                return await catModel.findOneAndDelete(filter);
+                return CatModel.findOneAndDelete(filter);
             } else {
-                return await catModel.findByIdAndDelete(args.id);
+                return CatModel.findByIdAndDelete(args.id);
             }
         },
     },
