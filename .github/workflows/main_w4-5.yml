@@ -56,6 +56,12 @@ jobs:
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
+        env:
+          PORT: ${{ secrets.PORT }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          AUTH_URL: ${{ secrets.AUTH_URL }}
+          UPLOAD_URL: ${{ secrets.UPLOAD_URL }}
         with:
           app-name: 'W4-5'
           slot-name: 'Production'
